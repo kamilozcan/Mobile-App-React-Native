@@ -14,8 +14,8 @@ const { width, height } = Dimensions.get("window");
 export default function TrendingMovies({ data }) {
   const navigation = useNavigation();
 
-  const handleClick = () => {
-    navigation.navigate[("Movie", item)];
+  const handleClick = (item) => {
+    navigation.navigate("Movie", item);
   };
 
   return (
@@ -33,7 +33,7 @@ export default function TrendingMovies({ data }) {
       <Carousel
         data={data}
         renderItem={({ item }) => (
-          <MovieCard item={item} handleClick={handleClick} />
+          <MovieCard handleClick={handleClick} item={item} />
         )}
         firstItem={1}
         inactiveSlideOpacity={0.6}
@@ -47,7 +47,7 @@ export default function TrendingMovies({ data }) {
 
 const MovieCard = ({ item, handleClick }) => {
   return (
-    <TouchableWithoutFeedback onPress={handleClick}>
+    <TouchableWithoutFeedback onPress={() => handleClick(item)}>
       <Image
         source={require("../../assets/images/moviePoster1.png")}
         style={{
