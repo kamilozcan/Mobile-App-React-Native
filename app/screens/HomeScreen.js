@@ -16,15 +16,17 @@ import {
 
 import { styles } from "../themes";
 import TrendingMovies from "../components/TrendingMovies";
+import MovieList from "../components/MovieList";
 
 const ios = Platform.OS == "ios";
 
 const HomeScreen = () => {
-
-    const [trending, setTrending] = useState([1,2,3])
+  const [trending, setTrending] = useState([1, 2, 3]);
+  const [upComing, setUpComing] = useState([1, 2, 3]);
+  const [topRated, setTopRated] = useState([1, 2, 3]);
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#3A3B3C" }}>
+    <View style={{ flex: 1, backgroundColor: "rgb(38, 38, 38)" }}>
       <SafeAreaView style={{}}>
         <StatusBar style={{ color: "light" }} />
         <View
@@ -57,6 +59,12 @@ const HomeScreen = () => {
       >
         {/* Trending movies */}
         <TrendingMovies data={trending} />
+
+        {/* Upcoming movies */}
+        <MovieList title="Upcoming" data={upComing} />
+
+        {/* Top Rated movies */}
+        <MovieList title="Top Rated" data={topRated} />
       </ScrollView>
     </View>
   );
