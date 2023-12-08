@@ -24,6 +24,7 @@ export default function TrendingMovies({ data }) {
         style={{
           color: "white",
           fontSize: 20,
+          fontWeight: "bold",
           marginHorizontal: 10,
           marginBottom: 10,
         }}

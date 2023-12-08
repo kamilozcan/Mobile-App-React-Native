@@ -26,7 +26,7 @@ const HomeScreen = () => {
   const [topRated, setTopRated] = useState([1, 2, 3]);
 
   return (
-    <View style={{ flex: 1, backgroundColor: "rgb(38, 38, 38)" }}>
+    <View style={{ flex: 1, backgroundColor: "rgb(23, 23, 23)" }}>
       <SafeAreaView style={{}}>
         <StatusBar style={{ color: "light" }} />
         <View
