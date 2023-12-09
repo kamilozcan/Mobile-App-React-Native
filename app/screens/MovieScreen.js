@@ -20,12 +20,13 @@ import MovieList from "../components/MovieList";
 
 const { width, height } = Dimensions.get("window");
 const ios = Platform.OS == "ios";
-const topMargin = ios ? "" : { marginTop: 3 };
+const topMargin = ios ? "" : { marginTop: 12 };
 
 const MovieScreen = () => {
+  const navigation = useNavigation();
+
   const { params: item } = useRoute();
   const [isFavorite, toggleFavorite] = useState(false);
-  const navigation = useNavigation();
   const [cast, setCast] = useState([1, 2, 3, 4, 5]);
   const [similarMovies, setSimilarMovies] = useState([1, 2, 3, 4, 5]);
 
@@ -192,7 +193,11 @@ const MovieScreen = () => {
       <Cast navigation={navigation} cast={cast} />
 
       {/* Similar Movies */}
-      <MovieList title="Similar Movies" hideSeeAll={true} data={similarMovies} />
+      <MovieList
+        title="Similar Movies"
+        hideSeeAll={true}
+        data={similarMovies}
+      />
     </ScrollView>
   );
 };
