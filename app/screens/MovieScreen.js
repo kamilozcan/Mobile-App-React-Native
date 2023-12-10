@@ -177,7 +177,7 @@ const MovieScreen = () => {
           style={{
             color: "rgb(163, 163, 163)",
             marginHorizontal: 16,
-            letterSpacing: 1,
+            // letterSpacing: 1,
           }}
         >
           Super-Hero partners Scott Lang and Hope van Dyne, along with with

@@ -247,7 +247,7 @@ export default function PersonScreen() {
           <Text
             style={{
               color: "rgb(163, 163, 163)",
-              letterSpacing: 1,
+              // letterSpacing: 1,
               marginBottom: 8,
             }}
           >
