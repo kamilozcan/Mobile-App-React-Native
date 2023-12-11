@@ -10,6 +10,7 @@ import {
 import React from "react";
 import { styles } from "../themes";
 import { useNavigation } from "@react-navigation/native";
+import { fallbackMoviePoster, image185 } from "../api/moviedb";
 
 const { width, height } = Dimensions.get("window");
 
@@ -52,7 +53,9 @@ export default function MovieList({ title, data, hideSeeAll }) {
             >
               <View style={{ marginVertical: 2, marginRight: 10 }}>
                 <Image
-                  source={require("../../assets/images/moviePoster2.png")}
+                  // source={require("../../assets/images/moviePoster2.png")}
+
+                  source={{ uri: image185(item.poster_path) || fallbackMoviePoster }}
                   style={{
                     borderRadius: 24,
                     width: width * 0.33,
@@ -60,9 +63,9 @@ export default function MovieList({ title, data, hideSeeAll }) {
                   }}
                 />
                 <Text style={{ color: "rgb(212, 212, 212)" }}>
-                  {movieName.length > 14
-                    ? movieName.slice(0, 14) + "..."
-                    : movieName}
+                  {item.title && item.title.length > 14
+                    ? item.title.slice(0, 14) + "..."
+                    : item.title}
                 </Text>
               </View>
             </TouchableWithoutFeedback>
