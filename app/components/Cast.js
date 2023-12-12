@@ -1,5 +1,7 @@
 import { Image, View, Text, ScrollView, TouchableOpacity } from "react-native";
 import React from "react";
+import { fallbackPersonImage, image185 } from "../api/moviedb";
+import { id } from "deprecated-react-native-prop-types/DeprecatedTextPropTypes";
 
 export default function Cast({ cast, navigation }) {
   let personName = "Keanue Reeves";
@@ -43,7 +45,11 @@ export default function Cast({ cast, navigation }) {
                   }}
                 >
                   <Image
-                    source={require("../../assets/images/castImage1.png")}
+                    // source={require("../../assets/images/castImage1.png")}
+                    source={{
+                      uri:
+                        image185(person?.profile_path) || fallbackPersonImage,
+                    }}
                     style={{
                       borderRadius: 16,
                       height: 72,
@@ -59,9 +65,9 @@ export default function Cast({ cast, navigation }) {
                     marginTop: 4,
                   }}
                 >
-                  {characterName.length > 10
-                    ? characterName.slice(0, 10) + "..."
-                    : characterName}
+                  {person?.character.length > 10
+                    ? person?.character.slice(0, 10) + "..."
+                    : person?.character}
                 </Text>
                 <Text
                   style={{
@@ -70,9 +76,9 @@ export default function Cast({ cast, navigation }) {
                     marginTop: 4,
                   }}
                 >
-                  {personName.length > 10
-                    ? personName.slice(0, 10) + "..."
-                    : personName}
+                  {person?.name.length > 10
+                    ? person?.name.slice(0, 10) + "..."
+                    : person?.name}
                 </Text>
               </TouchableOpacity>
             );

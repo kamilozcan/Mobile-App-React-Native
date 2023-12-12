@@ -17,6 +17,15 @@ import { styles, theme } from "../themes";
 import { LinearGradient } from "expo-linear-gradient";
 import Cast from "../components/Cast";
 import MovieList from "../components/MovieList";
+import {
+  fallbackMoviePoster,
+  fetchMovieCredits,
+  fetchMovieDetails,
+  fetchSimilarMovies,
+  image500,
+} from "../api/moviedb";
+import { id } from "deprecated-react-native-prop-types/DeprecatedTextPropTypes";
+import Loading from "../components/Loading";
 
 const { width, height } = Dimensions.get("window");
 const ios = Platform.OS == "ios";
@@ -27,14 +36,47 @@ const MovieScreen = () => {
 
   const { params: item } = useRoute();
   const [isFavorite, toggleFavorite] = useState(false);
-  const [cast, setCast] = useState([1, 2, 3, 4, 5]);
+  const [cast, setCast] = useState([]);
   const [similarMovies, setSimilarMovies] = useState([1, 2, 3, 4, 5]);
+  const [loading, setLoading] = useState(false);
+  const [movie, setMovie] = useState({});
 
   let movieName = "Ant-Man and the Wasp: Quantiunania";
-
   useEffect(() => {
-    //call the movie api
+    // console.log("itemid:   ", item.id);
+
+    setLoading(true);
+    getMovieDetails(item.id);
+    getMovieCredits(item.id);
+    getSimilarMovies(item.id);
   }, [item]);
+
+  const getMovieDetails = async (id) => {
+    const data = await fetchMovieDetails(id);
+    // console.log("movie details ", data);
+
+    if (data) setMovie(data);
+    setLoading(false);
+  };
+
+  // cast details
+  const getMovieCredits = async (id) => {
+    const data = await fetchMovieCredits(id);
+
+    // console.log("creditss: ", data)
+
+    if (data && data.cast) setCast(data.cast);
+  };
+
+  //similar movies
+  const getSimilarMovies = async (id) => {
+    const data = await fetchSimilarMovies(id);
+
+    console.log("similar movies: ", data);
+
+    if (data && data.results) setSimilarMovies(data.results);
+  };
+
   return (
     <ScrollView
       contentContainerStyle={{ paddingBottom: 32 }}
@@ -75,27 +117,34 @@ const MovieScreen = () => {
             />
           </TouchableOpacity>
         </SafeAreaView>
-        <View>
-          <Image
-            source={require("../../assets/images/moviePoster2.png")}
-            style={{ width, height: height * 0.55 }}
-          />
-          <LinearGradient
-            colors={[
-              "transparent",
-              "rgba(23, 23, 23, 0.8)",
-              "rgba(23, 23, 23, 1)",
-            ]}
-            style={{
-              position: "absolute",
-              bottom: 0,
-              width,
-              height: height * 0.4,
-            }}
-            start={{ x: 0.5, y: 0 }}
-            end={{ x: 0.5, y: 1 }}
-          />
-        </View>
+        {loading ? (
+          <Loading />
+        ) : (
+          <View>
+            <Image
+              // source={require("../../assets/images/moviePoster2.png")}
+              source={{
+                uri: image500(movie?.poster_path) || fallbackMoviePoster,
+              }}
+              style={{ width, height: height * 0.55 }}
+            />
+            <LinearGradient
+              colors={[
+                "transparent",
+                "rgba(23, 23, 23, 0.8)",
+                "rgba(23, 23, 23, 1)",
+              ]}
+              style={{
+                position: "absolute",
+                bottom: 0,
+                width,
+                height: height * 0.4,
+              }}
+              start={{ x: 0.5, y: 0 }}
+              end={{ x: 0.5, y: 1 }}
+            />
+          </View>
+        )}
       </View>
       {/* Movie Details */}
       <View
@@ -115,20 +164,24 @@ const MovieScreen = () => {
             marginVertical: 16,
           }}
         >
-          {movieName}
+          {movie?.title}
         </Text>
         {/* Status of Release and RunTime */}
-        <Text
-          style={{
-            color: "rgb(163, 163, 163)",
-            fontWeight: 600,
-            fontSize: 16,
-            textAlign: "center",
-            marginBottom: 16,
-          }}
-        >
-          Released • 2020 • 170 min
-        </Text>
+
+        {movie?.id ? (
+          <Text
+            style={{
+              color: "rgb(163, 163, 163)",
+              fontWeight: 600,
+              fontSize: 16,
+              textAlign: "center",
+              marginBottom: 16,
+            }}
+          >
+            {movie?.status} • {movie?.release_date?.split("-")[0]} •{" "}
+            {movie?.runtime} min
+          </Text>
+        ) : null}
 
         {/* genres */}
         <View
@@ -139,18 +192,26 @@ const MovieScreen = () => {
             marginBottom: 16,
           }}
         >
-          <Text
-            style={{
-              color: "rgb(163, 163, 163)",
-              fontWeight: 600,
-              fontSize: 16,
-              textAlign: "center",
-              marginRight: 8,
-            }}
-          >
-            Action •
-          </Text>
-          <Text
+          {movie?.genres?.map((genre, index) => {
+            let showDot = index + 1 != movie.genres.length;
+
+            return (
+              <Text
+                key={index}
+                style={{
+                  color: "rgb(163, 163, 163)",
+                  fontWeight: 600,
+                  fontSize: 16,
+                  textAlign: "center",
+                  marginRight: 8,
+                }}
+              >
+                {genre?.name} {showDot ? "•" : null}
+              </Text>
+            );
+          })}
+
+          {/* <Text
             style={{
               color: "rgb(163, 163, 163)",
               fontWeight: 600,
@@ -170,7 +231,7 @@ const MovieScreen = () => {
             }}
           >
             Comedy
-          </Text>
+          </Text> */}
         </View>
         {/* Description */}
         <Text
@@ -180,11 +241,7 @@ const MovieScreen = () => {
             // letterSpacing: 1,
           }}
         >
-          Super-Hero partners Scott Lang and Hope van Dyne, along with with
-          Hope's parents Janet van Dyne and Hank Pym, and Scott's daughter
-          Cassie Lang, find themselves exploring the Quantum Realm, interacting
-          with strange new creatures and embarking on an adventure that will
-          push them beyond the limits of what they thought possible.
+          {movie?.overview}
         </Text>
       </View>
 
