@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -9,13 +9,20 @@ import {
   TouchableOpacity,
   Image,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 
 import { ChevronLeftIcon } from "react-native-heroicons/outline";
 import { HeartIcon } from "react-native-heroicons/solid";
 
 import { styles, theme } from "../themes";
 import MovieList from "../components/MovieList";
+import {
+  fallbackPersonImage,
+  fetchMovieCredits,
+  fetchPersonDetails,
+  fetchPersonMovies,
+  image342,
+} from "../api/moviedb";
 
 const { width, height } = Dimensions.get("window");
 const ios = Platform.OS == "ios";
@@ -23,8 +30,36 @@ const verticalMargin = ios ? "" : { marginVertical: 12 };
 
 export default function PersonScreen() {
   const navigation = useNavigation();
+
+  const { params: item } = useRoute();
+
   const [isFavorite, toggleFavorite] = useState(false);
-  const [personMovies, setPersonMovies] = useState([1, 2, 3, 4]);
+  const [personMovies, setPersonMovies] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [person, setPerson] = useState({});
+
+  useEffect(() => {
+    setLoading(true);
+    // console.log("person: ", item);
+    getPersonDetails(item.id);
+    getPersonMovies(item.id);
+  }, [item]);
+
+  const getPersonDetails = async (id) => {
+    const data = await fetchPersonDetails(id);
+
+    if (data) setPerson(data);
+    setLoading(false);
+  };
+  const getPersonMovies = async (id) => {
+    const data = await fetchPersonMovies(id);
+
+    // console.log("person Movies", data)
+
+    if (data && data.cast) setPersonMovies(data.cast)
+
+  };
+
   return (
     <ScrollView
       contentContainerStyle={{ paddingBottom: 20 }}
@@ -89,7 +124,10 @@ export default function PersonScreen() {
             }}
           >
             <Image
-              source={require("../../assets/images/castImage2.png")}
+              // source={require("../../assets/images/castImage2.png")}
+              source={{
+                uri: image342(person?.profile_path) || fallbackPersonImage,
+              }}
               style={{ height: height * 0.43, width: width * 0.74 }}
             />
           </View>
@@ -103,7 +141,7 @@ export default function PersonScreen() {
               textAlign: "center",
             }}
           >
-            Keanu Reeves
+            {person?.name}
           </Text>
           <Text
             style={{
@@ -112,7 +150,7 @@ export default function PersonScreen() {
               textAlign: "center",
             }}
           >
-            London, United Kingdom
+            {person?.place_of_birth}
           </Text>
         </View>
         <View
@@ -149,7 +187,7 @@ export default function PersonScreen() {
                 fontWeight: 600,
               }}
             >
-              Male
+              {person?.gender == 1 ? "Female" : "Male"}
             </Text>
           </View>
           <View
@@ -174,7 +212,7 @@ export default function PersonScreen() {
                 fontWeight: 600,
               }}
             >
-              01-01-1972
+              {person?.birthday}
             </Text>
           </View>
           <View
@@ -199,7 +237,7 @@ export default function PersonScreen() {
                 fontWeight: 600,
               }}
             >
-              Acting
+              {person?.known_for_department}
             </Text>
           </View>
           <View
@@ -223,7 +261,7 @@ export default function PersonScreen() {
                 fontWeight: 600,
               }}
             >
-              80
+              {person?.popularity?.toFixed(2)} %
             </Text>
           </View>
         </View>
@@ -251,20 +289,7 @@ export default function PersonScreen() {
               marginBottom: 8,
             }}
           >
-            Keanu Charles Reeves is a Canadian actor. Reeves is known for his
-            roles in Bill & Ted's Excellent Adventure, Speed, Point Break, and
-            The Matrix franchise as Neo. He has collaborated with major
-            directors such as Stephen Frears (in the 1988 period drama Dangerous
-            Liaisons); Gus Van Sant (in the 1991 independent film My Own Private
-            Idaho); and Bernardo Bertolucci (in the 1993 film Little Buddha).
-            Referring to his 1991 film releases, The New York Times' critic,
-            Janet Maslin, praised Reeves' versatility, saying that he "displays
-            considerable discipline and range. He moves easily between the
-            buttoned-down demeanor that suits a police procedural story and the
-            loose-jointed manner of his comic roles." A repeated theme in roles
-            he has portrayed is that of saving the world, including the
-            characters of Ted Logan, Buddha, Neo, Johnny Mnemonic, John
-            Constantine and Klaatu.
+            {person?.biography || "N/A" }
           </Text>
         </View>
 

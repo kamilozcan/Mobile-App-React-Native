@@ -41,7 +41,7 @@ const MovieScreen = () => {
   const [loading, setLoading] = useState(false);
   const [movie, setMovie] = useState({});
 
-  let movieName = "Ant-Man and the Wasp: Quantiunania";
+  // let movieName = "Ant-Man and the Wasp: Quantiunania";
   useEffect(() => {
     // console.log("itemid:   ", item.id);
 
@@ -72,7 +72,7 @@ const MovieScreen = () => {
   const getSimilarMovies = async (id) => {
     const data = await fetchSimilarMovies(id);
 
-    console.log("similar movies: ", data);
+    // console.log("similar movies: ", data);
 
     if (data && data.results) setSimilarMovies(data.results);
   };
