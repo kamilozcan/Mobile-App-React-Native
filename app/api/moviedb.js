@@ -2,12 +2,16 @@ import axios from "axios";
 
 import MOVIE_API_KEY from "../../apikey";
 import { id } from "deprecated-react-native-prop-types/DeprecatedTextPropTypes";
+import { returnKeyLabel } from "deprecated-react-native-prop-types/DeprecatedTextInputPropTypes";
 
 //endpoints
 const apiBaseUrl = "https://api.themoviedb.org/3";
 const trendingMoviesEndPoint = `${apiBaseUrl}/trending/movie/day?api_key=${MOVIE_API_KEY}`;
 const upComingMoviesEndPoint = `${apiBaseUrl}/movie/upcoming?api_key=${MOVIE_API_KEY}`;
 const topRatedMoviesEndPoint = `${apiBaseUrl}/movie/top_rated?api_key=${MOVIE_API_KEY}`;
+const searchMoviesEndpoint =
+  `${apiBaseUrl}/search/movie?api_key=${MOVIE_API_KEY}`;
+
 
 //dynamic endpoints
 const movieDetailsEndpoint = (id) =>
@@ -78,9 +82,15 @@ export const fetchMovieCredits = (id) => {
 export const fetchSimilarMovies = (id) => {
   return apiCall(similarMoviesEndpoint(id));
 };
+
+export const searchMovies = params => {
+  return apiCall(searchMoviesEndpoint, params);
+};
+
 export const fetchPersonDetails = (id) => {
   return apiCall(personDetailsEndpoint(id));
 };
+
 export const fetchPersonMovies = (id) => {
   return apiCall(personMoviesEndpoint(id));
 };

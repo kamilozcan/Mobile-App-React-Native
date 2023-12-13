@@ -1,5 +1,7 @@
 import { useNavigation } from "@react-navigation/native";
-import React, { useState } from "react";
+import { value } from "deprecated-react-native-prop-types/DeprecatedTextInputPropTypes";
+import { debounce } from "lodash";
+import React, { useCallback, useState } from "react";
 import {
   Image,
   View,
@@ -12,14 +14,38 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 import { XMarkIcon } from "react-native-heroicons/outline";
+import { fallbackMoviePoster, image185, searchMovies } from "../api/moviedb";
 
 const { width, height } = Dimensions.get("window");
 export default function SearchScreen() {
-  const [results, setResults] = useState([1, 2, 3, 4]);
+  const [results, setResults] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const navigation = useNavigation();
 
   let movieName = "Ant-Man and the Wasp: Quantiunania";
+
+  const handleSearch = (value) => {
+    // console.log("value", value);
+    if (value && value.length > 2) {
+      setLoading(true);
+      searchMovies({
+        query: value,
+        include_adult: "false",
+        language: "en-US",
+        page: "1",
+      }).then((data) => {
+        setLoading(false);
+        // console.log("got movies", data);
+        if (data && data.results) setResults(data.results);
+      });
+    } else {
+      setLoading(false);
+      setResults([]);
+    }
+  };
+
+  handleTextDebounce = useCallback(debounce(handleSearch, 400), []);
 
   return (
     <SafeAreaView style={{ backgroundColor: "rgb(23,23,23)", flex: 1 }}>
@@ -36,6 +62,7 @@ export default function SearchScreen() {
         }}
       >
         <TextInput
+          onChangeText={handleTextDebounce}
           placeholder="Search Movie"
           placeholderTextColor={"lightgray"}
           style={{
@@ -99,7 +126,10 @@ export default function SearchScreen() {
                     }}
                   >
                     <Image
-                      source={require("../../assets/images/moviePoster2.png")}
+                      // source={require("../../assets/images/moviePoster2.png")}
+                      source={{
+                        uri: image185(item?.poster_path) || fallbackMoviePoster,
+                      }}
                       style={{
                         borderRadius: 24,
                         width: width * 0.44,
@@ -112,9 +142,9 @@ export default function SearchScreen() {
                         marginLeft: 4,
                       }}
                     >
-                      {movieName.length > 22
-                        ? movieName.slice(0, 22) + "..."
-                        : movieName}
+                      {item?.title.length > 22
+                        ? item?.title.slice(0, 22) + "..."
+                        : item?.title}
                     </Text>
                   </View>
                 </TouchableWithoutFeedback>
